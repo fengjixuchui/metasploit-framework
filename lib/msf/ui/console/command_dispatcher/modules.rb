@@ -473,6 +473,13 @@ module Msf
             else
               print_line(tbl.to_s)
               print_status("Using #{used_module}") if used_module
+
+              if @module_search_results.length > 1
+                index_usage = "use #{@module_search_results.length - 1}"
+                name_usage = "use #{@module_search_results.last.fullname}"
+
+                print("Interact with a module by name or index, for example %grn#{index_usage}%clr or %grn#{name_usage}%clr\n\n")
+              end
             end
 
             true
@@ -769,13 +776,11 @@ module Msf
             end
 
             # Choose a default payload when the module is used, not run
-            if mod.datastore['PAYLOAD'].nil? && dispatcher.respond_to?(:choose_payload)
+            if mod.datastore['PAYLOAD']
+              print_status("Using configured payload #{mod.datastore['PAYLOAD']}")
+            elsif dispatcher.respond_to?(:choose_payload)
               chosen_payload = dispatcher.choose_payload(mod)
-
-              # XXX: No vprint_status in this context
-              if framework.datastore['VERBOSE'].to_s == 'true' && chosen_payload
-                print_status("No payload configured, defaulting to #{chosen_payload}")
-              end
+              print_status("No payload configured, defaulting to #{chosen_payload}") if chosen_payload
             end
 
             mod.init_ui(driver.input, driver.output)
